@@ -308,6 +308,29 @@ const Projects = () => {
                           Votre navigateur ne supporte pas la lecture vidéo.
                         </video>
                       </div>
+                      <div className="mt-3 flex justify-center">
+                        <button
+                          onClick={() => {
+                            const el = videoRef.current as any;
+                            if (!el) return;
+                            if (el.requestFullscreen) {
+                              el.requestFullscreen().catch(() => {});
+                            } else if (el.webkitEnterFullscreen) {
+                              // iOS Safari native fullscreen for <video>
+                              try {
+                                el.webkitEnterFullscreen();
+                              } catch {}
+                            } else if (el.webkitRequestFullscreen) {
+                              try {
+                                el.webkitRequestFullscreen();
+                              } catch {}
+                            }
+                          }}
+                          className="px-4 md:hidden py-2 bg-slate-700/60 text-white rounded-md border border-slate-600 hover:bg-slate-700 transition"
+                        >
+                          Plein écran
+                        </button>
+                      </div>
                     </motion.div>
                   </motion.div>
                 )}
