@@ -9,10 +9,11 @@ import {
   Smartphone,
   Globe,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const projects = [
     {
@@ -118,6 +119,20 @@ const Projects = () => {
   const hasVideoDemo = (project: any) => {
     return project.type === "Mobile App" || project.type === "Web App";
   };
+
+  useEffect(() => {
+    if (selectedProject !== null && videoRef.current) {
+      // Try to play when modal opens. On mobile, user interaction is usually required —
+      // having the play called after click that opens modal increases chance to play.
+      const p = videoRef.current.play();
+      if (p && typeof p.then === "function") p.catch(() => {});
+    } else if (selectedProject === null && videoRef.current) {
+      try {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      } catch {}
+    }
+  }, [selectedProject]);
 
   return (
     <section id="projects" className="py-20">
@@ -280,9 +295,14 @@ const Projects = () => {
 
                       <div className="aspect-video bg-slate-700 rounded-lg overflow-hidden">
                         <video
+                          ref={videoRef}
                           controls
                           className="w-full h-full"
                           preload="metadata"
+                          playsInline
+                          // @ts-ignore - webkit attribute for iOS
+                          webkit-playsinline="true"
+                          crossOrigin="anonymous"
                         >
                           <source src={project.videoUrl} type="video/mp4" />
                           Votre navigateur ne supporte pas la lecture vidéo.
